@@ -22,8 +22,7 @@
 		</div>
 
 		<script type="module">
-
-			import * as THREE from './js/three.module.js';
+			import * as THREE from '../build/three.module.js';
 
 			import Stats from './jsm/libs/stats.module.js';
 
@@ -59,15 +58,23 @@
         const texture = new THREE.TextureLoader().load( 'textures/pod.svg' );
 				const geometry = new THREE.BoxGeometry( 20, 20, 20 );
         const material = new THREE.MeshBasicMaterial( { map: texture } );
+				const MOON_RADIUS = 20;
 
 				for ( let i = 0; i < 2000; i ++ ) {
           let facematerial;
+					let objgeo;
           if ( i % 10 == 2 ) {
-						facematerial = material;
+						objgeo = new THREE.SphereGeometry( MOON_RADIUS, 16, 16 );
+						facematerial = new THREE.MeshPhongMaterial( {
+							shininess: 5,
+							map: new THREE.TextureLoader().load( 'textures/pod.svg' )
+						} );
+
           } else {
 						facematerial = new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } );
-          }
-					const object = new THREE.Mesh( geometry, facematerial );
+						objgeo = geometry;
+					}
+					const object = new THREE.Mesh( objgeo, facematerial );
 
 					object.position.x = Math.random() * 800 - 400;
 					object.position.y = Math.random() * 800 - 400;
@@ -82,6 +89,7 @@
 					//object.scale.z = Math.random() + 0.5;
 
 					scene.add( object );
+
 
 				}
 
