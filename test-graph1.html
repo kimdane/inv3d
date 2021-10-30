@@ -3,6 +3,8 @@
 
   <script src="//unpkg.com/3d-force-graph"></script>
   <!--<script src="../../dist/3d-force-graph.js"></script>-->
+  <script src="//unpkg.com/three"></script>
+  <script src="//unpkg.com/three-spritetext"></script>
 </head>
 
 <body>
@@ -15,9 +17,32 @@
       (elem)
         .jsonUrl('../datasets/graph1.json')
         .nodeLabel('name')
-        .nodeAutoColorBy('group')
+        .nodeAutoColorBy('type')
         .linkDirectionalParticles("value")
         .linkDirectionalParticleSpeed(d => d.value * 0.001)
+        .linkWidth(3)
+        .linkDirectionalParticleWidth(2)
+        .nodeThreeObject(node => {
+          const label = new SpriteText(node.name);
+          label.material.depthWrite = false; // make sprite background transparent
+          label.color = node.color;
+          label.textHeight = 0.25;
+          //return sprite;
+          //const nodeEl = document.createElement('div');
+          //nodeEl.textContent = node.id;
+          //nodeEl.style.color = node.color;
+          //nodeEl.className = 'node-label';
+          //const label = new THREE.CSS2DObject(nodeEl);
+          const imgTexture = new THREE.TextureLoader().load('./icons/'+node.type+'.svg');
+          //const imgTexture = new THREE.TextureLoader().load('./imgs/pod.png');
+          const material = new THREE.SpriteMaterial({ map: imgTexture });
+          const sprite = new THREE.Sprite(material);
+          sprite.scale.set(12, 12);
+          sprite.add(label);
+          label.position.y -= 1;
+          label.position.z = label.textHeight * 0.9;
+          return sprite;
+        })
         .onNodeClick(node => {
           // Aim at node from outside it
           distance = 80;
@@ -38,5 +63,8 @@
         //  });
         //  angle += Math.PI / 10000;
         //}, 1);
+
+        // Spread nodes a little wider
+        Graph.d3Force('charge').strength(-240);
   </script>
 </body>
