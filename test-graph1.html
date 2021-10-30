@@ -1,0 +1,42 @@
+<head>
+  <style> body { margin: 0; } </style>
+
+  <script src="//unpkg.com/3d-force-graph"></script>
+  <!--<script src="../../dist/3d-force-graph.js"></script>-->
+</head>
+
+<body>
+  <div id="3d-graph"></div>
+
+  <script>
+    const elem = document.getElementById('3d-graph');
+    let distance = 800;
+    const Graph = ForceGraph3D()
+      (elem)
+        .jsonUrl('../datasets/graph1.json')
+        .nodeLabel('name')
+        .nodeAutoColorBy('group')
+        .linkDirectionalParticles("value")
+        .linkDirectionalParticleSpeed(d => d.value * 0.001)
+        .onNodeClick(node => {
+          // Aim at node from outside it
+          distance = 80;
+          const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
+
+          Graph.cameraPosition(
+            { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio }, // new position
+            node, // lookAt ({ x, y, z })
+            3000  // ms transition duration
+          );
+        });
+        // camera orbit
+        //let angle = 0;
+        //setInterval(() => {
+        //  Graph.cameraPosition({
+        //    x: distance * Math.sin(angle),
+        //    z: distance * Math.cos(angle)
+        //  });
+        //  angle += Math.PI / 10000;
+        //}, 1);
+  </script>
+</body>
