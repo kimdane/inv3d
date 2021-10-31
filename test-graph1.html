@@ -1,5 +1,5 @@
 <head>
-  <style> body { margin: 0; background-color: #000; color: #fff; } </style>
+  <style> body { margin: 0; } </style>
 
   <script src="//unpkg.com/3d-force-graph"></script>
   <!--<script src="../../dist/3d-force-graph.js"></script>-->
@@ -37,9 +37,10 @@
           //const imgTexture = new THREE.TextureLoader().load('./imgs/pod.png');
           const material = new THREE.SpriteMaterial({ map: imgTexture });
           const sprite = new THREE.Sprite(material);
+          sprite.material.depthWrite = false;
           sprite.scale.set(12, 12);
           sprite.add(label);
-          label.position.y -= label.textHeight * 10;
+          label.position.y -= label.textHeight * 5;
           label.position.z = label.textHeight * 0.9;
           return sprite;
         })
@@ -53,6 +54,40 @@
             node, // lookAt ({ x, y, z })
             3000  // ms transition duration
           );
+          const elem2 = document.getElementById('3d-graph');
+          const Graph2 = ForceGraph3D()
+            (elem2)
+            .jsonUrl('../datasets/graph2.json')
+            .jsonUrl('../datasets/graph1.json')
+            .nodeLabel('name')
+            .nodeAutoColorBy('type')
+            .linkDirectionalParticles("value")
+            .linkDirectionalParticleSpeed(d => d.value * 0.001)
+            .linkWidth(3)
+            .linkDirectionalParticleWidth(2)
+            .nodeThreeObject(node => {
+              const label = new SpriteText(node.name);
+              label.material.depthWrite = false; // make sprite background transparent
+              label.color = node.color;
+              label.textHeight = 0.25;
+              //return sprite;
+              //const nodeEl = document.createElement('div');
+              //nodeEl.textContent = node.id;
+              //nodeEl.style.color = node.color;
+              //nodeEl.className = 'node-label';
+              //const label = new THREE.CSS2DObject(nodeEl);
+              const imgTexture = new THREE.TextureLoader().load('./icons/'+node.type+'.svg');
+              //const imgTexture = new THREE.TextureLoader().load('./imgs/pod.png');
+              const material = new THREE.SpriteMaterial({ map: imgTexture });
+              const sprite = new THREE.Sprite(material);
+              sprite.material.depthWrite = false;
+              sprite.scale.set(12, 12);
+              sprite.add(label);
+              label.position.y -= label.textHeight * 5;
+              label.position.z = label.textHeight * 0.9;
+              return sprite;
+            })
+
         });
         // camera orbit
         //let angle = 0;
