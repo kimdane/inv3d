@@ -1,5 +1,5 @@
 <head>
-  <style> body { margin: 0; } </style>
+  <style> body { margin: 0; background-color: #000; color: #fff; } </style>
 
   <script src="//unpkg.com/3d-force-graph"></script>
   <!--<script src="../../dist/3d-force-graph.js"></script>-->
@@ -39,13 +39,13 @@
           const sprite = new THREE.Sprite(material);
           sprite.scale.set(12, 12);
           sprite.add(label);
-          label.position.y -= 1;
+          label.position.y -= label.textHeight * 10;
           label.position.z = label.textHeight * 0.9;
           return sprite;
         })
         .onNodeClick(node => {
           // Aim at node from outside it
-          distance = 80;
+          distance = 200;
           const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
 
           Graph.cameraPosition(
