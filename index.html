@@ -35,7 +35,7 @@
     let distance = 800;
     const Graph = ForceGraph3D()
       (elem)
-        .jsonUrl('../datasets/graph1.json')
+        .jsonUrl('./datasets/graph1.json')
         .nodeLabel('name')
         .nodeAutoColorBy('type')
         .linkDirectionalParticles("value")
@@ -67,7 +67,7 @@
             3000  // ms transition duration
           );
           let { nodes, links } = Graph.graphData();
-          fetch('../datasets/graph2.json').then(res => res.json()).then(data => {
+          fetch('./datasets/graph2.json').then(res => res.json()).then(data => {
             Graph.graphData({nodes: nodes.concat(data.nodes).unique_nodes(), links: links.concat(data.links).unique_links()});
           });
         });
