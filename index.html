@@ -24,7 +24,7 @@
       var a = this.concat();
       for(var i=0; i<a.length; ++i) {
           for(var j=i+1; j<a.length; ++j) {
-              if(a[i].source.id === a[j].source.id && a[i].target.id === a[j].target.id)
+              if(a[i].source === a[j].source && a[i].target === a[j].target)
                   a.splice(j--, 1);
           }
       }
@@ -36,9 +36,8 @@
     const Graph = ForceGraph3D()
       (elem)
         .jsonUrl('datasets/graph1.json')
-        .nodeLabel('name')
-        .nodeAutoColorBy('type')
-        .linkDirectionalParticles("value")
+        .nodeLabel(d => d.type+': '+d.name)
+        .linkDirectionalParticles('value')
         .linkDirectionalParticleSpeed(d => d.value * 0.001)
         .linkWidth(3)
         .linkDirectionalParticleWidth(2)
@@ -62,12 +61,12 @@
           const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
 
           Graph.cameraPosition(
-            { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio }, // new position
+            { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio * 2 }, // new position
             node, // lookAt ({ x, y, z })
             3000  // ms transition duration
           );
           let { nodes, links } = Graph.graphData();
-          fetch('datasets/graph2.json').then(res => res.json()).then(data => {
+          fetch('/api/graph/image/dummy:latest').then(res => res.json()).then(data => {
             Graph.graphData({nodes: nodes.concat(data.nodes).unique_nodes(), links: links.concat(data.links).unique_links()});
           });
         });
