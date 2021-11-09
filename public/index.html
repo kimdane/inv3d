@@ -1,0 +1,76 @@
+<head>
+  <style> body { margin: 0; } </style>
+  <script src="//unpkg.com/3d-force-graph"></script>
+  <script src="//unpkg.com/three"></script>
+  <script src="//unpkg.com/three-spritetext"></script>
+</head>
+
+<body>
+  <div id="3d-graph"></div>
+  <div id="3d-graph-buffer"></div>
+  <script>
+    Array.prototype.unique_nodes = function() {
+      var a = this.concat();
+      for(var i=0; i<a.length; ++i) {
+          for(var j=i+1; j<a.length; ++j) {
+              if(a[i].id === a[j].id)
+                  a.splice(j--, 1);
+          }
+      }
+      return a;
+    };
+    
+    Array.prototype.unique_links = function() {
+      var a = this.concat();
+      for(var i=0; i<a.length; ++i) {
+          for(var j=i+1; j<a.length; ++j) {
+              if(a[i].source === a[j].source && a[i].target === a[j].target)
+                  a.splice(j--, 1);
+          }
+      }
+      return a;
+    };
+    
+    const elem = document.getElementById('3d-graph');
+    let distance = 800;
+    const Graph = ForceGraph3D()
+      (elem)
+        .jsonUrl('datasets/graph1.json')
+        .nodeLabel(d => d.type+': '+d.name)
+        .linkDirectionalParticles('value')
+        .linkDirectionalParticleSpeed(d => d.value * 0.001)
+        .linkWidth(3)
+        .linkDirectionalParticleWidth(2)
+        .nodeThreeObject(node => {
+          const label = new SpriteText(node.name);
+          label.material.depthWrite = false; // make sprite background transparent
+          label.textHeight = 0.25;
+          const imgTexture = new THREE.TextureLoader().load('./icons/'+node.type+'.svg');
+          const material = new THREE.SpriteMaterial({ map: imgTexture });
+          const sprite = new THREE.Sprite(material);
+          sprite.material.depthWrite = false;
+          sprite.scale.set(12, 12);
+          sprite.add(label);
+          label.position.y -= label.textHeight * 5;
+          label.position.z = label.textHeight * 0.9;
+          return sprite;
+        })
+        .onNodeClick(node => {
+          // Aim at node from outside it
+          distance = 200;
+          const distRatio = 1 + distance/Math.hypot(node.x, node.y, node.z);
+
+          Graph.cameraPosition(
+            { x: node.x * distRatio, y: node.y * distRatio, z: node.z * distRatio * 2 }, // new position
+            node, // lookAt ({ x, y, z })
+            3000  // ms transition duration
+          );
+          let { nodes, links } = Graph.graphData();
+          fetch('api/graph/'+node.type+'/'+node.id).then(res => res.json()).then(data => {
+            Graph.graphData({nodes: nodes.concat(data.nodes).unique_nodes(), links: links.concat(data.links).unique_links()});
+          });
+        });
+        // Spread nodes a little wider
+        Graph.d3Force('charge').strength(-240);
+  </script>
+</body>

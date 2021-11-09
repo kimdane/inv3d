@@ -1,6 +1,6 @@
 {
   "nodes": [
-    {"id": "byuon3dgdc2", "name": "aws_auth2-container", "ports": [8080], "type": "container"}
+    {"id": "byuon3dgdc2", "name": "dummy2-container", "ports": [8080], "type": "container"}
   ],
   "links": [
     {"source": "byuon3dgdc2", "target": "byuon3dgdi", "value": 1}
