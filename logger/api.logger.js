@@ -1,7 +1,4 @@
-const pine = require('pine');
-
-const logger = pine();
-
+const logger = require('loglevel');
 
 class APILogger {
 

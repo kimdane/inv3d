@@ -8,9 +8,7 @@ const connect = () => {
 
     mongoose.connect(url, {
         useNewUrlParser: true,
-        useFindAndModify: true,
         useUnifiedTopology: true,
-        useCreateIndex: true,
     })
 
     mongoose.connection.once("open", async () => {
