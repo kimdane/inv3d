@@ -1,4 +1,4 @@
-FROM node:14
+FROM node:17
 LABEL maintainer="github.com/kimdane"
 
 COPY --chown=node:node ./package*.json /app/
